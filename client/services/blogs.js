@@ -1,10 +1,10 @@
 import axios from 'axios'
 const baseUrl = '/api/blogs'
 
-let token = null;
+let token = null
 
 const setToken = newToken => {
-  token = `Bearer ${newToken}`;
+  token = `Bearer ${newToken}`
 }
 
 const getAll = async () => {
@@ -34,7 +34,7 @@ const deleteBlog = async (id) => {
 }
 
 const addComment = async (id, comment) => {
-  const response = await axios.post(`${baseUrl}/${id}/comments`, {comment})
+  const response = await axios.post(`${baseUrl}/${id}/comments`, { comment })
   return response.data
 }
 

@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { appendBlog } from '../reducers/blogsReducer'
 
-const Home = ({user, blogs}) => {
+const Home = ({ user, blogs }) => {
   const timeoutRef = useRef(null)
   const blogsFormRef = useRef()
   const dispatch = useDispatch()

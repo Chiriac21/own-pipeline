@@ -1,12 +1,10 @@
-const blogRouter = require('express').Router();
-const jwt = require('jsonwebtoken');
-const Blog = require('../models/blog');
-const User = require('../models/user');
-const logger = require('../utils/logger');
-const { userExtractor } = require('../utils/middleware');
+const blogRouter = require('express').Router()
+const Blog = require('../models/blog')
+const User = require('../models/user')
+const { userExtractor } = require('../utils/middleware')
 
 blogRouter.get('/', async (request, response) => {
-  var blogs = await Blog.find({}).populate('user', { username: 1, name: 1 });
+  var blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
   response.json(blogs)
 })
 
@@ -37,7 +35,7 @@ blogRouter.delete('/:id', userExtractor, async (request, response) => {
   const user = request.user
 
   if(!blog)
-    return response.status(404).end();
+    return response.status(404).end()
 
   if(blog.user.toString() !== user._id.toString()) {
     return response.status(401).json({ error: 'only the creator can delete a blog' })
@@ -50,12 +48,12 @@ blogRouter.delete('/:id', userExtractor, async (request, response) => {
 })
 
 blogRouter.put('/:id', async (request, response) => {
-  const allowed = ['title', 'author', 'url', 'likes', 'user', 'comments'];
-  const updates = {};
+  const allowed = ['title', 'author', 'url', 'likes', 'user', 'comments']
+  const updates = {}
 
   for (const key of allowed) {
     if (Object.prototype.hasOwnProperty.call(request.body, key)) {
-      updates[key] = request.body[key];
+      updates[key] = request.body[key]
     }
   }
 
@@ -63,10 +61,10 @@ blogRouter.put('/:id', async (request, response) => {
     request.params.id,
     updates,
     { new: true, runValidators: true, context: 'query' }
-  );
+  )
 
-  if (!updated) return response.status(404).end();
-  response.json(updated);
+  if (!updated) return response.status(404).end()
+  response.json(updated)
 })
 
 blogRouter.post('/:id/comments', async (request, response) => {
@@ -76,8 +74,8 @@ blogRouter.post('/:id/comments', async (request, response) => {
 
   const updatedBlog = await blogToFind.save()
 
-  if (!updatedBlog) return response.status(404).end();
-  response.json(updatedBlog);
+  if (!updatedBlog) return response.status(404).end()
+  response.json(updatedBlog)
 })
 
 

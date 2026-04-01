@@ -40,7 +40,7 @@ describe('Blog component', () => {
     await user.click(button)
 
     expect(hiddenElement).toBeVisible()
-    expect(hiddenElement).toHaveTextContent('http://testblog.comlikes 5', {exact: false})
+    expect(hiddenElement).toHaveTextContent('http://testblog.comlikes 5', { exact: false })
   })
 
   // test('check if like button is pressed twice', async () => {
@@ -51,7 +51,7 @@ describe('Blog component', () => {
   //     likes: 5,
   //     user: { id: 'user1', name: 'Test User' }
   //   }
-    
+
   //   const mockHandler = vi.fn()
 
   //   render(<Blog blog={blog} user={blog.user} setBlogs={() => {}} onBlogLiked={mockHandler} />)

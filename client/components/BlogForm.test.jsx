@@ -7,7 +7,7 @@ describe('BlogForm component', () => {
 
   test('check event handler for blog form', async () => {
     const createBlog = vi.fn()
-    const user = userEvent.setup();
+    const user = userEvent.setup()
 
     render(<BlogForm onCreate={createBlog} />)
 
