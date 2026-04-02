@@ -11,7 +11,7 @@
     "test": "cross-env NODE_ENV=test node --test",
     "start:test": "cross-env NODE_ENV=test node --watch ./server/index.js",
     "dev:test": "concurrently \"npm run start:test\" \"npm run dev:client\"",
-    "build": "vite build --outDir ../build",
+    "build": "vite build --outDir build",
     "lint": "eslint .",
     "test:e2e": "playwright test",
     "start:e2e": "cross-env NODE_ENV=test node ./server/index.js"

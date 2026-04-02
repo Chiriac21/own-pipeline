@@ -10,6 +10,7 @@ const middleware = require('./server/utils/middleware')
 const blogRouter = require('./server/controllers/blogs')
 const usersRouter = require('./server/controllers/users')
 const loginRouter = require('./server/controllers/login')
+const path = require('path')
 
 const app = express()
 
@@ -25,6 +26,7 @@ mongoose.connect(mongoUrl).then(() => {
 
 
 app.use(express.json())
+app.use(express.static('build'))
 app.use(middleware.requestLogger)
 app.use(middleware.tokenExtractor)
 
@@ -37,6 +39,9 @@ if (process.env.NODE_ENV === 'test') {
   app.use('/api/testing', testingRouter)
 }
 
+app.get('/*splat', (req, res) => {
+  res.sendFile(path.resolve('build', 'index.html'))
+})
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
 
