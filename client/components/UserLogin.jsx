@@ -47,7 +47,7 @@ const UserLogin = () => {
             value={password}
             onChange={({ target }) => setPassword(target.value)}/>
         </FloatingLabel>
-        <Button variant="primary" type="submit" className="mb-4 justify-content-center align-items-center">
+        <Button variant="primary" name="login" type="submit" className="mb-4 justify-content-center align-items-center">
         Log in
         </Button>
         <Notification/>

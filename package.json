@@ -7,11 +7,14 @@
     "start": "cross-env NODE_ENV=production node ./server/index.js",
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "dev:server": "cross-env NODE_ENV=development node --watch ./server/index.js",
-    "dev:client": "vite",
+    "dev:client": "vite --port 5173",
     "test": "cross-env NODE_ENV=test node --test",
     "start:test": "cross-env NODE_ENV=test node --watch ./server/index.js",
-    "build": "vite build --outDir ../build ",
-    "lint": "eslint ."
+    "dev:test": "concurrently \"npm run start:test\" \"npm run dev:client\"",
+    "build": "vite build --outDir ../build",
+    "lint": "eslint .",
+    "test:e2e": "playwright test --ui",
+    "start:e2e": "cross-env NODE_ENV=test node ./server/index.js"
   },
   "author": "",
   "license": "ISC",

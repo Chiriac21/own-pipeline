@@ -1,3 +1,7 @@
+const dns = require('node:dns/promises')
+
+dns.setServers(['1.1.1.1', '8.8.8.8'])
+
 const express = require('express')
 const mongoose = require('mongoose')
 const config = require('./server/utils/config')
@@ -10,7 +14,7 @@ const loginRouter = require('./server/controllers/login')
 const app = express()
 
 logger.info('Connecting to database...')
-console.log(config.MONGODB_URI)
+
 const mongoUrl = config.MONGODB_URI
 mongoose.connect(mongoUrl).then(() => {
   logger.info('Connected to database')
@@ -29,7 +33,7 @@ app.use('/api/users', usersRouter)
 app.use('/api/login', loginRouter)
 
 if (process.env.NODE_ENV === 'test') {
-  const testingRouter = require('./controllers/testing')
+  const testingRouter = require('./server/controllers/testing')
   app.use('/api/testing', testingRouter)
 }
 

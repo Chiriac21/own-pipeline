@@ -1,9 +1,9 @@
 const { test, describe } = require('node:test')
 const assert = require('node:assert')
-const totalLikes = require('../utils/list_helper').totalLikes
-const favoriteBlog = require('../utils/list_helper').favoriteBlog
-const mostBlogs = require('../utils/list_helper').mostBlogs
-const mostLikes = require('../utils/list_helper').mostLikes
+const totalLikes = require('../../server/utils/list_helper').totalLikes
+const favoriteBlog = require('../../server/utils/list_helper').favoriteBlog
+const mostBlogs = require('../../server/utils/list_helper').mostBlogs
+const mostLikes = require('../../server/utils/list_helper').mostLikes
 
 const blogs = [
   {

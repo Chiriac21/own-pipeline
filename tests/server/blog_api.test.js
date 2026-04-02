@@ -2,11 +2,11 @@ const { test, after, before, beforeEach, describe } = require('node:test')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const assert = require('node:assert')
-const app = require('../app')
+const app = require('../../app')
 const helper = require('./test_helper')
 const bcrypt = require('bcryptjs')
-const Blog = require('../models/blog')
-const User = require('../models/user')
+const Blog = require('../../server/models/blog')
+const User = require('../../server/models/user')
 
 const api = supertest(app)
 let authToken
@@ -15,6 +15,7 @@ describe('Blog API tests', () => {
 
   // Create a dedicated user and log in ONCE for this suite
   before(async () => {
+    await mongoose.connection.asPromise()
     // Use a username that doesn't clash with the user tests ("root")
     const username = 'poster'
     const password = 'sekret'
@@ -66,7 +67,7 @@ describe('Blog API tests', () => {
       url: 'http://site.com',
       likes: 10,
     }
-
+    console.log(authToken)
     await api
       .post('/api/blogs')
       .set('Authorization', `Bearer ${authToken}`)

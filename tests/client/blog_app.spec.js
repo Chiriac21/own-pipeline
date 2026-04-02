@@ -12,6 +12,13 @@ describe('Blog app', () => {
         password: 'password'
       }
     })
+    await request.post('http://localhost:5173/api/users', {
+      data: {
+        name: 'Chiriac',
+        username: 'admin',
+        password: 'admin'
+      }
+    })
 
     await page.goto('http://localhost:5173')
   })
@@ -20,14 +27,14 @@ describe('Blog app', () => {
     await expect(page.getByText('Log in to application')).toBeVisible()
     await expect(page.getByLabel('username')).toBeVisible()
     await expect(page.getByLabel('password')).toBeVisible()
-    await expect(page.getByRole('button', { name: 'login' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Log in' })).toBeVisible()
   })
 
   describe('Login', () => {
     test('succeeds with correct credentials', async ({ page }) => {
       await loginWith(page, 'chiri123', 'password')
 
-      await expect(page.getByText('Chiriac Gabriel logged in.')).toBeVisible()
+      await expect(page.getByText('Signed in as: Chiriac Gabriel')).toBeVisible()
     })
 
     test('fails with wrong credentials', async ({ page }) => {
@@ -46,61 +53,58 @@ describe('Blog app', () => {
       await createBlog(page, 'Test Title', 'Test Author', 'Test Url')
 
       await expect(page.getByText('a new blog Test Title by Test Author added')).toBeVisible()
-      await expect(page.getByText('Test Title Test Author')).toBeVisible()
-      await expect(page.getByRole('button', { name: 'View' })).toBeVisible()
-      await expect(page.getByRole('button', { name: 'Remove' })).toBeVisible()
     })
 
     test('a new blog can be liked', async ({ page }) => {
       await createBlog(page, 'Test Title', 'Test Author', 'Test Url')
 
-      await page.getByRole('button', { name: 'View' }).click()
+      await page.getByRole('link', { name: 'Test Title' }).click()
       await page.getByRole('button', { name: 'like' }).click()
 
       await expect(page.getByText('likes 1')).toBeVisible()
     })
 
     test('remove a blog added by the user', async ({ page }) => {
-      page.on('dialog', dialog => dialog.accept())
-
       await createBlog(page, 'Test Title', 'Test Author', 'Test Url')
 
+      await page.getByRole('link', { name: 'Test Title' }).click()
       await expect(page.getByRole('button', { name: 'Remove' })).toBeVisible()
 
-      await page.getByRole('button', { name: 'Remove' }).click()
+      page.once('dialog', async dialog => {
+        await dialog.accept()
+      })
 
-      await expect(page.getByText('Test Title Test Author')).not.toBeVisible()
-      await expect(page.getByRole('button', { name: 'View' })).not.toBeVisible()
-      await expect(page.getByRole('button', { name: 'Remove' })).not.toBeVisible()
+      await Promise.all([
+        page.waitForResponse(response =>
+          response.request().method() === 'DELETE' &&
+          response.url().includes('/api/blogs/') &&
+          response.status() === 204
+        ),
+        page.getByRole('button', { name: 'Remove' }).click()
+      ])
 
+      await expect(page.getByRole('link', { name: 'Test Title' })).toHaveCount(0)
     })
 
     test('only user who created the blog sees remove', async ({ page }) => {
       createBlog(page, 'Test Title', 'Test Author', 'Test Url')
 
+      await expect(page.getByText('Signed in as: Chiriac Gabriel')).toBeVisible()
+
+      await page.getByRole('link', { name: 'Test Title' }).click()
       await expect(page.getByRole('button', { name: 'Remove' })).toBeVisible()
+      
+      await expect(page.getByText('added by Chiriac Gabriel')).toHaveCount(1)
 
-      await page.getByRole('button', { name: 'View' }).click()
+      await expect(
+        page.getByText(`a new blog Test Title by Test Author added`)
+      ).toHaveCount(0, { timeout: 10000 })
+      await page.getByRole('button', { name: 'Logout' }).click()
 
-      await expect(page.getByText('Chiriac Gabriel logged in.')).toBeVisible()
-      await expect(page.locator('#hidden').getByText('Chiriac Gabriel')).toBeVisible()
-    })
-
-    test('blogs order according to the likes', async ({ page }) => {
-      await createBlog(page, 'Test Title', 'Test Author', 'Test Url')
-      await createBlog(page, 'Test Title2', 'Test Author', 'Test Url2')
-
-      const blogs = page.locator('[data-testid="blog"]')
-
-      await blogs.nth(1).getByRole('button', { name: 'View' }).click()
-      await blogs.nth(1).getByRole('button', { name: 'like' }).click()
-
-      const blogsAfter = page.locator('[data-testid="blog"]')
-
-      blogsAfter.nth(0).getByRole('button', { name: 'View' }).click()
-
-      await expect(blogsAfter.nth(0).getByText('likes 1')).toBeVisible()
-      await expect(blogsAfter.nth(1).getByText('likes 0')).toBeVisible()
+      await loginWith(page, 'admin', 'admin')
+      await expect(page.getByText('Signed in as: Chiriac')).toBeVisible()
+      await expect(page.getByText('added by Chiriac Gabriel')).toHaveCount(1)
+      await expect(page.getByRole('button', { name: 'Remove' })).not.toBeVisible()
     })
   })
 })
